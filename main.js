@@ -23,7 +23,7 @@ var layer_list = [
     {
         'image': background,
         'src': 'layer1.png',
-        'z_index': -5,
+        'z_index': -3,
         'position': { x: 0, y: 0 },
         'blend': null,
         'opacity': 1
@@ -31,7 +31,7 @@ var layer_list = [
     {
         'image': stars,
         'src': 'layer2.png',
-        'z_index': -4,
+        'z_index': -2,
         'position': { x: 0, y: 0 },
         'blend': null,
         'opacity': 1
@@ -39,7 +39,7 @@ var layer_list = [
     {
         'image': meteors,
         'src': 'layer3.png',
-        'z_index': -2,
+        'z_index': -1,
         'position': { x: 0, y: 0 },
         'blend': 'lighten',
         'opacity': 1
