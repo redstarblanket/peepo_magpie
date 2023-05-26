@@ -23,7 +23,7 @@ var layer_list = [
     {
         'image': background,
         'src': 'layer1.png',
-        'z_index': -10,
+        'z_index': -5,
         'position': { x: 0, y: 0 },
         'blend': null,
         'opacity': 1
@@ -47,7 +47,7 @@ var layer_list = [
     {
         'image': hamtaro,
         'src': 'layer4.png',
-        'z_index': 0,
+        'z_index': -.5,
         'position': { x: 0, y: 0 },
         'blend': 'normal',
         'opacity': 1
@@ -55,7 +55,7 @@ var layer_list = [
     {
         'image': konpeito,
         'src': 'layer5.png',
-        'z_index': 2,
+        'z_index': 1.5,
         'position': { x: 0, y: 0 },
         'blend': 'normal',
         'opacity': 1,
