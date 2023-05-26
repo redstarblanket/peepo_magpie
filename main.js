@@ -23,7 +23,7 @@ var layer_list = [
     {
         'image': background,
         'src': 'layer1.png',
-        'z_index': -3,
+        'z_index': -5,
         'position': { x: 0, y: 0 },
         'blend': null,
         'opacity': 1
