@@ -13,10 +13,10 @@ var load_counter = 0;
 
 // initialize images for layers
 var background = new Image();
-var stars = new Image();
-var meteors = new Image();
-var hamtaro = new Image();
-var konpeito = new Image();
+var mountains = new Image();
+var grass = new Image();
+var magpie = new Image();
+var plants = new Image();
 
 // create a list of layered objects
 var layer_list = [
@@ -29,7 +29,7 @@ var layer_list = [
         'opacity': 1
     },
     {
-        'image': stars,
+        'image': mountains,
         'src': 'layer2.png',
         'z_index': -2,
         'position': { x: 0, y: 0 },
@@ -37,7 +37,7 @@ var layer_list = [
         'opacity': 1
     },
     {
-        'image': meteors,
+        'image': grass,
         'src': 'layer3.png',
         'z_index': -1,
         'position': { x: 0, y: 0 },
@@ -45,7 +45,7 @@ var layer_list = [
         'opacity': 1
     },
     {
-        'image': hamtaro,
+        'image': magpie,
         'src': 'layer4.png',
         'z_index': -.5,
         'position': { x: 0, y: 0 },
@@ -53,7 +53,7 @@ var layer_list = [
         'opacity': 1
     },
     {
-        'image': konpeito,
+        'image': plants,
         'src': 'layer5.png',
         'z_index': 1.5,
         'position': { x: 0, y: 0 },
