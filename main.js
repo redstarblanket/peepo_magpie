@@ -42,12 +42,13 @@ function hideLoading() {
 }
 
 function resizeCanvasToDisplaySize() {
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
-    }
+    const size = 900; // match your image size
+    canvas.width = size;
+    canvas.height = size;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+}
+
 }
 
 function getOffset(layer) {
