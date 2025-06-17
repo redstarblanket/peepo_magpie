@@ -49,7 +49,7 @@ function resizeCanvasToDisplaySize() {
     canvas.style.height = size + 'px';
 }
 
-}
+
 
 function getOffset(layer) {
     const touch_multiplier = 0.09;
