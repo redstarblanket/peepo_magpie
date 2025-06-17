@@ -68,6 +68,9 @@ layer_list.forEach(function (layer, index) {
         if (load_counter >= layer_list.length) {
             // hide loading screen
             hideLoading();
+            canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+resizeCanvasToDisplaySize();
             requestAnimationFrame(drawCanvas);
         }
     }
