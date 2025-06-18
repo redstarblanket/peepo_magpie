@@ -64,10 +64,10 @@ var layer_list = [
 
 // Resize canvas to match CSS display size (to keep square shape)
 function resizeCanvasToDisplaySize() {
-    const size = canvas.offsetWidth;
-    if (canvas.width !== size || canvas.height !== size) {
-        canvas.width = size;
-        canvas.height = size;
+    const displaySize = Math.min(canvas.offsetWidth, canvas.offsetHeight);
+    if (canvas.width !== displaySize || canvas.height !== displaySize) {
+        canvas.width = displaySize;
+        canvas.height = displaySize;
     }
 }
 
@@ -103,7 +103,16 @@ function drawCanvas() {
 
         context.globalCompositeOperation = layer.blend || 'normal';
         context.globalAlpha = layer.opacity;
-        context.drawImage(layer.image, layer.position.x, layer.position.y);
+        // Get image center position
+const imageWidth = layer.image.width;
+const imageHeight = layer.image.height;
+
+// Center image in canvas
+const x = (canvas.width - imageWidth) / 2 + layer.position.x;
+const y = (canvas.height - imageHeight) / 2 + layer.position.y;
+
+context.drawImage(layer.image, x, y);
+
     });
 
     requestAnimationFrame(drawCanvas);
