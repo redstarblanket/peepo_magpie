@@ -62,11 +62,20 @@ var layer_list = [
     }
 ];
 
+// Resize canvas to match CSS display size (to keep square shape)
+function resizeCanvasToDisplaySize() {
+    const size = canvas.offsetWidth;
+    if (canvas.width !== size || canvas.height !== size) {
+        canvas.width = size;
+        canvas.height = size;
+    }
+}
+
 layer_list.forEach(function (layer, index) {
     layer.image.onload = function () {
         load_counter += 1;
         if (load_counter >= layer_list.length) {
-            // hide loading screen
+            resizeCanvasToDisplaySize(); // resize once before drawing
             hideLoading();
             requestAnimationFrame(drawCanvas);
         }
@@ -79,45 +88,28 @@ function hideLoading() {
 }
 
 function drawCanvas() {
-    // clear whatever is in the canvas
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    resizeCanvasToDisplaySize(); // keep canvas square on each frame
 
-    // update tween
+    context.clearRect(0, 0, canvas.width, canvas.height);
     TWEEN.update();
 
-    // calculate how much canvas should rotate
     var rotate_x = (pointer.y * -0.15) + (motion.y * -1.2);
     var rotate_y = (pointer.x * 0.15) + (motion.x * 1.2);
-
     var transform_string = "rotateX(" + rotate_x + "deg) rotateY(" + rotate_y + "deg)";
-
-    // actually rotate canvas
     canvas.style.transform = transform_string;
 
-    // loop through each layer and draw to canvas
     layer_list.forEach(function (layer, index) {
-
         layer.position = getOffset(layer);
 
-        // If the layer has a blend mode set, use that blend mode, otherwise use normal
-        if (layer.blend) {
-            context.globalCompositeOperation = layer.blend;
-        } else {
-            context.globalCompositeOperation = 'normal';
-        }
-
-        // Set the opacity of the layer
+        context.globalCompositeOperation = layer.blend || 'normal';
         context.globalAlpha = layer.opacity;
-
         context.drawImage(layer.image, layer.position.x, layer.position.y);
     });
+
     requestAnimationFrame(drawCanvas);
 }
 
-// function to calculate layer offset
 function getOffset(layer) {
-    // calculate the amount you want the layers to move based on touch or mouse input.
-    // you can play with the touch_multiplier variable here. Depending on the size of your canvas you may want to turn it up or down.
     var touch_multiplier = 0.09;
     var touch_offset_x = pointer.x * layer.z_index * touch_multiplier;
     var touch_offset_y = pointer.y * layer.z_index * touch_multiplier;
@@ -126,44 +118,25 @@ function getOffset(layer) {
     var motion_offset_x = motion.x * layer.z_index * motion_multiplier;
     var motion_offset_y = motion.y * layer.z_index * motion_multiplier;
 
-    // calculate the total offset for both X and Y
-    var offset = {
+    return {
         x: touch_offset_x + motion_offset_x,
         y: touch_offset_y + motion_offset_y
     };
-
-    // return the calculated offset to whatever requested it.
-    return offset;
 }
-
-//// TOUCH AND MOUSE CONTROLS
 
 var moving = false;
-
-// initialize touch and mouse position
-pointer_initial = {
-    x: 0,
-    y: 0
-};
-
-var pointer = {
-    x: 0,
-    y: 0
-}
+var pointer_initial = { x: 0, y: 0 };
+var pointer = { x: 0, y: 0 };
 
 canvas.addEventListener('touchstart', pointerStart);
 canvas.addEventListener('mousedown', pointerStart);
 
 function pointerStart(event) {
     moving = true;
-    // check if touch event
     if (event.type === 'touchstart') {
-        // set initial touch position to the coordinates where you first touched the screen
         pointer_initial.x = event.touches[0].clientX;
         pointer_initial.y = event.touches[0].clientY;
-        // check if mouse click event
     } else if (event.type === 'mousedown') {
-        // set initial mouse position to the coordinates where you first clicked
         pointer_initial.x = event.clientX;
         pointer_initial.y = event.clientY;
     }
@@ -172,110 +145,77 @@ function pointerStart(event) {
 window.addEventListener('touchmove', pointerMove);
 window.addEventListener('mousemove', pointerMove);
 
-function pointerMove(even) {
+function pointerMove(event) {
     event.preventDefault();
-    // Only run this if touch or mouse click has started
-    if (moving === true) {
+    if (moving) {
         var current_x = 0;
         var current_y = 0;
-        // check if touch event
         if (event.type === 'touchmove') {
-            // Current position of touch
             current_x = event.touches[0].clientX;
             current_y = event.touches[0].clientY;
-            // check if mouse event
         } else if (event.type === 'mousemove') {
-            // Current position of mouse cursor
             current_x = event.clientX;
             current_y = event.clientY;
         }
-        // set pointer position to the difference between current position and initial position
         pointer.x = current_x - pointer_initial.x;
         pointer.y = current_y - pointer_initial.y;
     }
-};
+}
 
 canvas.addEventListener('touchmove', function (event) {
     event.preventDefault();
 });
 
-canvas.addEventListener('mousehmove', function (event) {
+canvas.addEventListener('mousemove', function (event) {
     event.preventDefault();
 });
 
-window.addEventListener('touchend', function (event) {
-    endGesture();
-});
-
-window.addEventListener('mouseup', function (event) {
-    endGesture();
-});
+window.addEventListener('touchend', endGesture);
+window.addEventListener('mouseup', endGesture);
 
 function endGesture() {
     moving = false;
-    // removes any in progress tweens
     TWEEN.removeAll();
-    // starts the animation to reset the position of all layers when you stop moving them
-    var pointer_tween = new TWEEN.Tween(pointer).to({ x: 0, y: 0 }, 300).easing(TWEEN.Easing.Back.Out).start();
-
+    new TWEEN.Tween(pointer).to({ x: 0, y: 0 }, 300).easing(TWEEN.Easing.Back.Out).start();
 }
 
 //// MOTION CONTROLS ////
+var motion_initial = { x: null, y: null };
+var motion = { x: 0, y: 0 };
 
-// initialize variables for motion-based parallax
-var motion_initial = {
-    x: null,
-    y: null
-};
-
-var motion = {
-    x: 0,
-    y: 0
-};
-
-// listen to gyroscope events
 window.addEventListener('deviceorientation', function (event) {
-    // if this is the first time through
     if (!motion_initial.x && !motion_initial.y) {
         motion_initial.x = event.beta;
         motion_initial.y = event.gamma;
     }
 
     if (window.orientation === 0) {
-        // device in portrait orientation
         motion.x = event.gamma - motion_initial.y;
         motion.y = event.beta - motion_initial.x;
-
     } else if (window.orientation === 90) {
-        // device in landscape on left side
         motion.x = event.beta - motion_initial.x;
         motion.y = -event.gamma + motion_initial.y;
-
     } else if (window.orientation === -90) {
-        // device in landscape on right side
         motion.x = -event.beta + motion_initial.x;
         motion.y = event.gamma - motion.initial.y;
-
     } else {
-        // device upside down
         motion.x = -event.gamma + motion_initial.y;
         motion.y = -event.beta + motion_initial.x;
     }
-
 });
 
-// reset position of motion controls when device changes between portrait and landscape, etc.
-window.addEventListener('orientationchange', function (event) {
+window.addEventListener('orientationchange', function () {
     motion_initial.x = 0;
     motion_initial.y = 0;
 });
 
-window.addEventListener('touchend', function () {
-    enableMotion();
-});
+window.addEventListener('touchend', enableMotion);
 
 function enableMotion() {
-    if (window.DeviceOrientationEvent) {
-        DeviceOrientationEvent.requestPermission();
+    if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().catch(console.error);
     }
 }
+
+// Resize canvas on window resize
+window.addEventListener('resize', resizeCanvasToDisplaySize);
