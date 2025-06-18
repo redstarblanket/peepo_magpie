@@ -111,7 +111,9 @@ const imageHeight = layer.image.height;
 const x = (canvas.width - imageWidth) / 2 + layer.position.x;
 const y = (canvas.height - imageHeight) / 2 + layer.position.y;
 
-context.drawImage(layer.image, x, y);
+const scale = canvas.width / imageWidth;
+context.drawImage(layer.image, x, y, imageWidth * scale, imageHeight * scale);
+
 
     });
 
