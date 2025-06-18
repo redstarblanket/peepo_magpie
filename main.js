@@ -107,12 +107,14 @@ function drawCanvas() {
 const imageWidth = layer.image.width;
 const imageHeight = layer.image.height;
 
-// Center image in canvas
-const x = (canvas.width - imageWidth) / 2 + layer.position.x;
-const y = (canvas.height - imageHeight) / 2 + layer.position.y;
+const scaledWidth = imageWidth * canvasScale;
+const scaledHeight = imageHeight * canvasScale;
 
-const scale = canvas.width / imageWidth;
-context.drawImage(layer.image, x, y, imageWidth * scale, imageHeight * scale);
+// Center the image, apply parallax offset
+const x = (canvas.width - scaledWidth) / 2 + layer.position.x * canvasScale;
+const y = (canvas.height - scaledHeight) / 2 + layer.position.y * canvasScale;
+
+context.drawImage(layer.image, x, y, scaledWidth, scaledHeight);
 
 
     });
